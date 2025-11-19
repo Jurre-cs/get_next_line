@@ -1,111 +1,117 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   get_next_line_utils_tmp.c                          :+:    :+:            */
+/*   get_next_line_utils.c                              :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: jstomps <jstomps@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2025/11/05 10:36:45 by jstomps       #+#    #+#                 */
-/*   Updated: 2025/11/07 15:50:33 by jstomps       ########   odam.nl         */
+/*   Created: 2025/11/17 15:01:04 by jstomps       #+#    #+#                 */
+/*   Updated: 2025/11/19 16:50:36 by jstomps       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_linelen(const char *s)
+char	*ft_strchr(const char *s, int c)
 {
-	size_t	i;
+	int		i;
+	char	*s1;
 
 	i = 0;
-	if (!s)
-		return (0);
-	while (s[i] && s[i] != '\n')
+	s1 = (char *)s;
+	if (c < 0)
+		return (NULL);
+	while (s1[i] != (char)c)
+	{
+		if (!s1[i])
+			return (NULL);
 		i++;
-	if (s[i] == '\n')
-		return (i + 1);
-	return (i);
+	}
+	i++;
+	return ((char *)&s1[i]);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
+	size_t	len1;
+	size_t	len2;
 	size_t	i;
 	char	*joined;
-	int		n1;
-	int		n2;
 
-	n1 = ft_linelen(s1);
-	n2 = ft_linelen(s2);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
 	i = 0;
-	joined = malloc((n1 + (n2 + 1)) * sizeof(char));
+	joined = malloc((len1 + len2 + 1) * sizeof(char));
 	if (!joined)
 		return (NULL);
-	if (s1)
-	{
+	if(s1)
 		while (s1[i])
 		{
 			joined[i] = s1[i];
 			i++;
 		}
-	}
 	i = 0;
-	while (s2[i] != '\0' && s2)
+	while (s2[i] != '\0')
 	{
-		joined[n1 + i] = s2[i];
+		joined[len1 + i] = s2[i];
 		i++;
 	}
+	joined[len1 + i] = '\0';
 	return (joined);
 }
 
-size_t	ft_len(const char *str)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
 
-	if (!str)
-		return (-1);
 	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\0')
-			return (0);
-		else if (str[i] == '\n')
-			return (1);
+	while (s != NULL && s[i] != '\0')
 		i++;
-	}
-	return (-1);
+	return (i);
 }
 
-char	*ft_substr(char const *strnext, unsigned int start, size_t len)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*subs;
 	size_t	i;
 
 	i = 0;
-	while (strnext && strnext[i] != '\0')
+	while (s && s[i] != '\0')
 		i++;
-	// else
-	subs = malloc((len + 1) * sizeof(char));
+	if (len > i + start)
+		len = i + start;
+	if (start > i)
+		return (ft_strdup(""));
+	if (start + len > ft_strlen(s))
+		(len = ft_strlen(s) - start);
+	subs = ft_calloc(len + 1, sizeof(char));
 	if (!subs)
 		return (NULL);
 	i = 0;
 	while (i < len)
 	{
-		subs[i] = strnext[start];
+		subs[i] = s[start];
 		start++;
 		i++;
 	}
 	return (subs);
 }
 
-size_t	ft_totalstrlen(const char *s)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	size_t	i;
+	size_t	product;
+	char	*mem;
 
-	i = 0;
-	while (s[i] != '\0')
-		i++;
-	return (i);
+	if (nmemb > SIZE_MAX / size)
+		return(NULL);
+	product = nmemb * size;
+	mem = malloc(product);
+	if (!mem)
+		return (NULL);
+	while (product > 0)
+	{
+		mem[product - 1] = '\0';
+		product--;
+	}
+	return (mem);
 }
-
-// remember strjoin might need to be freed if it runs more than ones
-// buffer_size 1 werkt nog niet
-// null terminator aan het einde plaatsen
